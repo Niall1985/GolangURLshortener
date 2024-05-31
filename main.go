@@ -22,12 +22,12 @@ var (
 	rng     = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
-func shortenURLHandler(w http.ResponseWriter, r *http.Request) {
+func shortenURLHandler(w http.ResponseWriter, route *http.Request) {
 	var requestData struct {
 		URL string `json:"url"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	if err := json.NewDecoder(route.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
@@ -46,8 +46,8 @@ func shortenURLHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(responseData)
 }
 
-func redirectHandler(w http.ResponseWriter, r *http.Request) {
-	shortURL := mux.Vars(r)["shortURL"]
+func redirectHandler(w http.ResponseWriter, route *http.Request) {
+	shortURL := mux.Vars(route)["shortURL"]
 
 	urlMux.Lock()
 	originalURL, exists := urls[shortURL]
@@ -58,7 +58,7 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, originalURL, http.StatusMovedPermanently)
+	http.Redirect(w, route, originalURL, http.StatusMovedPermanently)
 }
 
 func generateShortURL() string {
@@ -70,9 +70,9 @@ func generateShortURL() string {
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/shorten", shortenURLHandler).Methods("POST")
-	r.HandleFunc("/{shortURL}", redirectHandler).Methods("GET")
+	route := mux.NewRouter()
+	route.HandleFunc("/shorten", shortenURLHandler).Methods("POST")
+	route.HandleFunc("/{shortURL}", redirectHandler).Methods("GET")
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", route)
 }
