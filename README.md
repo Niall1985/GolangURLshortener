@@ -24,11 +24,16 @@ This project is a simple URL shortener service written in Go. It provides an API
 2. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/url-shortener.git
-   cd url-shortener
+   git clone https://github.com/Niall1985/GolangURLshortener.git
+   cd GolangURLshortener
    ```
 
-3. Run the application:
+3. Install the mux package:
+    ```bash
+   go get -u github.com/gorilla/mux
+   ```
+
+4. Run the application:
 
    ```bash
    go run main.go
